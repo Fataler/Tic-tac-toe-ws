@@ -3,10 +3,14 @@
   "version": "1.0.0",
   "main": "server.js",
   "dependencies": {
-    "express": "^4.17.1",
-    "ws": "^8.0.0"
+    "express": "^5.0.0-alpha.8",
+    "ws": "^8.18.0",
+    "sqlite3": "^5.1.7"
   },
   "scripts": {
     "start": "node server.js"
+  },
+  "engines": {
+    "node": "16.x"
   }
 }

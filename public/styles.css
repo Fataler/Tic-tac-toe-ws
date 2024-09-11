@@ -9,21 +9,49 @@ body {
   background-color: #f0f0f0;
 }
 
-#status, #player-info, #current-turn, #player-name{
+#lobby,
+#game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 600px;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  margin: 20px; /* Добавляем отступы */
+}
+
+h1 {
+  margin-bottom: 20px;
+}
+
+#status,
+#player-info,
+#current-turn,
+#player-name,
+#leaderboard,
+#games-list,
+#online-players {
   margin: 10px;
   font-size: 1.2em;
 }
 
 #board {
   display: grid;
-  grid-template-columns: repeat(3, 100px);
+  grid-template-columns: repeat(3, 1fr);
   grid-gap: 5px;
-  height: 310px;
+  width: 100%;
+  max-width: 310px;
+  margin: 0 auto; /* Центрирование */
 }
 
 .cell {
-  width: 100px;
-  height: 100px;
+  width: 100%;
+  padding-top: 100%; /* This makes the cells square */
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -33,6 +61,66 @@ body {
   cursor: pointer;
 }
 
+.cell div {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .cell:hover {
   background-color: #e0e0e0;
+}
+
+button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 1em;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: #fff;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+@media (max-width: 600px) {
+  #lobby,
+  #game {
+    margin: 10px; /* Увеличиваем отступы на мобильных устройствах */
+  }
+
+  #board {
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 5px;
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .cell {
+    font-size: 1.5em;
+  }
+
+  #status,
+  #player-info,
+  #current-turn,
+  #player-name,
+  #leaderboard,
+  #games-list,
+  #online-players {
+    font-size: 1em;
+  }
+
+  button {
+    font-size: 0.9em;
+    padding: 8px 16px;
+  }
 }

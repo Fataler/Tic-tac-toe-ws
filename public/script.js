@@ -1,12 +1,17 @@
 const ws = new WebSocket(`wss://${window.location.host}`);
+const lobby = document.getElementById("lobby");
+const game = document.getElementById("game");
 const board = document.getElementById("board");
 const statusElement = document.getElementById("status");
 const playerInfoElement = document.getElementById("player-info");
 const currentTurnElement = document.getElementById("current-turn");
+const leaderboard = document.getElementById("leaderboard");
+const gamesList = document.getElementById("games-list");
+const onlinePlayers = document.getElementById("online-players");
+const startGameButton = document.getElementById("start-game");
+const backToLobbyButton = document.getElementById("back-to-lobby");
 let player;
 let currentPlayer = "X";
-
-const playerNameElement = document.getElementById("player-name");
 
 let playerName = getCookie("playerName");
 if (!playerName || playerName === "null") {
@@ -17,11 +22,21 @@ if (!playerName || playerName === "null") {
   setCookie("playerName", playerName, 365);
 }
 
-playerNameElement.textContent = `Ваше имя: ${playerName}`;
+startGameButton.addEventListener("click", () => {
+  ws.send(JSON.stringify({ type: "startGame", name: playerName }));
+  lobby.style.display = "none";
+  game.style.display = "block";
+});
+
+backToLobbyButton.addEventListener("click", () => {
+  ws.send(JSON.stringify({ type: "leave", name: playerName }));
+  game.style.display = "none";
+  lobby.style.display = "block";
+});
 
 ws.onopen = () => {
   console.log("Connected to server");
-  ws.send(JSON.stringify({ type: "join", name: playerName }));
+  ws.send(JSON.stringify({ type: "joinLobby", name: playerName }));
 };
 
 ws.onmessage = (event) => {
@@ -48,6 +63,12 @@ ws.onmessage = (event) => {
     statusElement.textContent =
       "Противник отключился. Ожидание нового противника...";
     console.log("Opponent disconnected");
+  } else if (data.type === "leaderboard") {
+    updateLeaderboard(data.leaderboard);
+  } else if (data.type === "gamesList") {
+    updateGamesList(data.gamesList);
+  } else if (data.type === "onlinePlayers") {
+    updateOnlinePlayers(data.onlinePlayers);
   }
 };
 
@@ -60,9 +81,11 @@ function updateBoard(boardState) {
   boardState.forEach((cell, index) => {
     const cellElement = document.createElement("div");
     cellElement.className = "cell";
-    cellElement.textContent = cell;
+    const cellContent = document.createElement("div");
+    cellContent.textContent = cell;
+    cellElement.appendChild(cellContent);
     cellElement.addEventListener("click", () => makeMove(index));
-    cellElement.addEventListener("touchstart", () => makeMove(index));
+    cellElement.addEventListener("touchstart", () => makeMove(index)); 
     board.appendChild(cellElement);
   });
 }
@@ -94,6 +117,7 @@ function checkWinner(boardState) {
       boardState[a] === boardState[c]
     ) {
       alert(`Игрок ${boardState[a]} выиграл!`);
+      ws.send(JSON.stringify({ type: "win", player: boardState[a] }));
       ws.send(JSON.stringify({ type: "reset" }));
       console.log(`Player ${boardState[a]} won`);
       return;
@@ -112,12 +136,41 @@ function resetBoard() {
   for (let i = 0; i < 9; i++) {
     const cellElement = document.createElement("div");
     cellElement.className = "cell";
+    const cellContent = document.createElement("div");
+    cellElement.appendChild(cellContent);
     cellElement.addEventListener("click", () => makeMove(i));
-    cellElement.addEventListener("touchstart", () => makeMove(i));
+    cellElement.addEventListener("touchstart", () => makeMove(i)); 
     board.appendChild(cellElement);
   }
   currentTurnElement.textContent = `Сейчас ходит: ${currentPlayer}`;
   console.log("Board reset");
+}
+
+function updateLeaderboard(leaderboardData) {
+  leaderboard.innerHTML = "Список лидеров:";
+  leaderboardData.forEach((player) => {
+    const playerElement = document.createElement("div");
+    playerElement.textContent = `${player.name}: ${player.wins} побед`;
+    leaderboard.appendChild(playerElement);
+  });
+}
+
+function updateGamesList(gamesListData) {
+  gamesList.innerHTML = "Текущие игры:";
+  gamesListData.forEach((game) => {
+    const gameElement = document.createElement("div");
+    gameElement.textContent = `${game.player1} vs ${game.player2}`;
+    gamesList.appendChild(gameElement);
+  });
+}
+
+function updateOnlinePlayers(onlinePlayersData) {
+  onlinePlayers.innerHTML = "Игроки онлайн:";
+  onlinePlayersData.forEach((player) => {
+    const playerElement = document.createElement("div");
+    playerElement.textContent = player.name;
+    onlinePlayers.appendChild(playerElement);
+  });
 }
 
 function setCookie(name, value, days) {

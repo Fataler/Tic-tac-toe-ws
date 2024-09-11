@@ -7,11 +7,20 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div id="status">Идет поиск противника...</div>
-    <div id="player-name">Ваше имя:</div>
-    <div id="player-info">Ваш символ:</div>
-    <div id="current-turn">Сейчас ходит:</div>
-    <div id="board"></div>
+    <div id="lobby">
+      <h1>Лобби</h1>
+      <div id="leaderboard">Список лидеров:</div>
+      <div id="games-list">Текущие игры:</div>
+      <div id="online-players">Игроки онлайн:</div>
+      <button id="start-game">Начать игру</button>
+    </div>
+    <div id="game" style="display: none">
+      <div id="status">Идет поиск противника...</div>
+      <div id="player-info">Ваш символ:</div>
+      <div id="current-turn">Сейчас ходит:</div>
+      <div id="board"></div>
+      <button id="back-to-lobby">Назад</button>
+    </div>
     <script src="script.js"></script>
   </body>
 </html>
