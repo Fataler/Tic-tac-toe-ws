@@ -1,2 +1,1 @@
-# Tic-tac-toe-ws
-Tic-tac-toe with WebSockets
+# Tic Tac Toe on websockets!
