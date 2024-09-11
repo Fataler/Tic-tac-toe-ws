@@ -1,3 +1,5 @@
+import { setCookie, getCookie } from "./utils.js";
+
 const ws = new WebSocket(`wss://${window.location.host}`);
 const lobby = document.getElementById("lobby");
 const game = document.getElementById("game");
@@ -85,7 +87,7 @@ function updateBoard(boardState) {
     cellContent.textContent = cell;
     cellElement.appendChild(cellContent);
     cellElement.addEventListener("click", () => makeMove(index));
-    cellElement.addEventListener("touchstart", () => makeMove(index)); 
+    cellElement.addEventListener("touchstart", () => makeMove(index));
     board.appendChild(cellElement);
   });
 }
@@ -116,10 +118,12 @@ function checkWinner(boardState) {
       boardState[a] === boardState[b] &&
       boardState[a] === boardState[c]
     ) {
-      alert(`Игрок ${boardState[a]} выиграл!`);
-      ws.send(JSON.stringify({ type: "win", player: boardState[a] }));
-      ws.send(JSON.stringify({ type: "reset" }));
-      console.log(`Player ${boardState[a]} won`);
+      if (player === boardState[a]) {
+        alert(`Игрок ${boardState[a]} выиграл!`);
+        ws.send(JSON.stringify({ type: "win", player: boardState[a] }));
+        ws.send(JSON.stringify({ type: "reset" }));
+        console.log(`Player ${boardState[a]} won`);
+      }
       return;
     }
   }
@@ -139,7 +143,7 @@ function resetBoard() {
     const cellContent = document.createElement("div");
     cellElement.appendChild(cellContent);
     cellElement.addEventListener("click", () => makeMove(i));
-    cellElement.addEventListener("touchstart", () => makeMove(i)); 
+    cellElement.addEventListener("touchstart", () => makeMove(i));
     board.appendChild(cellElement);
   }
   currentTurnElement.textContent = `Сейчас ходит: ${currentPlayer}`;
@@ -171,25 +175,4 @@ function updateOnlinePlayers(onlinePlayersData) {
     playerElement.textContent = player.name;
     onlinePlayers.appendChild(playerElement);
   });
-}
-
-function setCookie(name, value, days) {
-  const d = new Date();
-  d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
-  const expires = "expires=" + d.toUTCString();
-  document.cookie =
-    name + "=" + encodeURIComponent(value) + ";" + expires + ";path=/";
-}
-
-function getCookie(name) {
-  const cname = name + "=";
-  const decodedCookie = decodeURIComponent(document.cookie);
-  const ca = decodedCookie.split(";");
-  for (let i = 0; i < ca.length; i++) {
-    let c = ca[i].trim();
-    if (c.indexOf(cname) === 0) {
-      return decodeURIComponent(c.substring(cname.length, c.length));
-    }
-  }
-  return "";
 }

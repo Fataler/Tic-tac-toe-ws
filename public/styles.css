@@ -95,7 +95,7 @@ button:hover {
 @media (max-width: 600px) {
   #lobby,
   #game {
-    margin: 10px; /* Увеличиваем отступы на мобильных устройствах */
+    margin: 10px;
   }
 
   #board {
